@@ -1,0 +1,54 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    overflow: hidden;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.username-container {
+    margin: 20px;
+    font-size: 15px;
+    color: #0F0;
+    display: flex;
+}
+
+.letter {
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInUp 0.5s forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.username-container .letter:nth-child(1) {
+    animation-delay: 0.1s;
+}
+.username-container .letter:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.username-container .letter:nth-child(3) {
+    animation-delay: 0.3s;
+}
+.username-container .letter:nth-child(4) {
+    animation-delay: 0.4s;
+}
+.username-container .letter:nth-child(5) {
+    animation-delay: 0.5s;
+}
+.username-container .letter:nth-child(6) {
+    animation-delay: 0.6s;
+}
+.username-container .letter:nth-child(7) {
+    animation-delay: 0.7s;
+}
