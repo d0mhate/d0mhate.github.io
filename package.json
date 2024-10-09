@@ -1,0 +1,21 @@
+{
+  "name": "d0mhate.github.io",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000g\u0000i\u0000t\u0000h\u0000u\u0000b\u0000.\u0000i\u0000o\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "scripts": {
+    "build-js": "terser js/script.js -o js/script.min.js --compress --mangle",
+    "build-css": "postcss css/styles.css -o css/styles.min.css",
+    "build-html": "html-minifier-terser index.html -o index.min.html --collapse-whitespace --remove-comments --minify-css true --minify-js true && move index.min.html index.html",
+    "build": "npm run build-css && npm run build-js && npm run build-html"
+  },
+  "keywords": [],
+  "author": "d0mhate",
+  "license": "ISC",
+  "devDependencies": {
+    "cssnano": "^7.0.6",
+    "html-minifier-terser": "^7.2.0",
+    "postcss-cli": "^11.0.0",
+    "terser": "^5.34.1"
+  }
+}
