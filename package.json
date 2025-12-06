@@ -7,7 +7,8 @@
     "build-js": "terser js/script.js -o js/script.min.js --compress --mangle",
     "build-css": "postcss css/styles.css -o css/styles.min.css",
     "build-html": "html-minifier-terser index.html -o index.min.html --collapse-whitespace --remove-comments --minify-css true --minify-js true && move index.min.html index.html",
-    "build": "npm run build-css && npm run build-js && npm run build-html"
+    "build": "npm run build-css && npm run build-js && npm run build-html",
+    "dev": "node dev-server.js"
   },
   "keywords": [],
   "author": "d0mhate",

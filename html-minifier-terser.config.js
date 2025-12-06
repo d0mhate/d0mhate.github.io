@@ -1,7 +1,17 @@
 module.exports = {
     collapseWhitespace: true,
+    conservativeCollapse: false,
+    collapseBooleanAttributes: true,
     removeComments: true,
+    removeEmptyAttributes: true,
+    removeOptionalTags: true,
+    removeRedundantAttributes: true,
+    removeAttributeQuotes: true,
+    removeScriptTypeAttributes: true,
+    removeStyleLinkTypeAttributes: true,
+    useShortDoctype: true,
+    sortAttributes: true,
+    sortClassName: true,
     minifyCSS: true,
     minifyJS: true,
-  };
-  
+};
