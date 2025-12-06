@@ -17,7 +17,14 @@
 </head>
 <body>
 
-<script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-<script src="js/script.js"></script>
+<script src="node_modules/three/build/three.min.js"></script>
+<script>
+    if (typeof window.THREE === "undefined") {
+        var fallback = document.createElement("script");
+        fallback.src = "https://unpkg.com/three@0.160.0/build/three.min.js";
+        document.head.appendChild(fallback);
+    }
+</script>
+<script src="js/script.min.js"></script>
 </body>
 </html>

@@ -211,9 +211,13 @@
                 // сколько времени прошло с момента удара
                 float life = dt;
 
-                // частота осцилляций в зависимости от режима
+                // частота/затухание, зависящие от режима и раздражения
                 float freq = (uMode == 1) ? 6.0 : 3.0;        // в злом режиме дрожит чаще
                 float decay = (uMode == 1) ? 1.0 : 1.2;       // чуть дольше держится
+                float irritK = clamp(uIrritation, 0.0, 1.0);
+                // раздражение делает волну острее и быстрее
+                freq *= mix(1.0, 1.8, irritK);
+                decay *= mix(1.0, 0.55, irritK);
                 // вязкость растягивает затухание и понижает частоту
                 float viscK = clamp(uViscosity, 0.0, 1.0);
                 decay *= mix(1.0, 1.85, viscK);
@@ -236,6 +240,9 @@
                 float speed      = (uMode == 1) ? 3.0 : 2.0;   // скорость фронта волны
                 float centerK    = (uMode == 1) ? 18.0 : 10.0; // резкость центрального прогиба
                 float ringK      = (uMode == 1) ? 16.0 : 8.0;  // резкость кольца
+                float irritShape = clamp(uIrritation, 0.0, 1.0);
+                centerK *= mix(1.0, 3.4, irritShape); // в раздражении резче
+                ringK   *= mix(1.0, 2.6, irritShape);
                 if (uImpactType == 1) { // обвал — резче в центре
                     speed = 2.3;
                     centerK = 26.0;
@@ -258,7 +265,8 @@
 
                 // итоговый эффект: центр + кольцо, оба с жидкой осцилляцией
                 float shapeBoost = (uImpactType == 1) ? 1.4 : ((uImpactType == 2) ? 1.15 : 1.0);
-                impact = (center + ring * 0.8) * temporal * uImpactStrength * shapeBoost;
+                float irritBoost = 1.0 + irritK * 0.9;
+                impact = (center + ring * 0.8) * temporal * uImpactStrength * shapeBoost * irritBoost;
 
                 vImpact = impact;
             } else {
@@ -266,7 +274,8 @@
             }
 
             // при «проколе» сфера прогибается ВОВНУТРЬ (вычитаем impact)
-            float displacement = viscousNoise * uNoiseAmp - impact - streamDisp * 12.0;
+            float irritKDisp = mix(1.0, 1.4, clamp(uIrritation, 0.0, 1.0));
+            float displacement = viscousNoise * uNoiseAmp * irritKDisp - impact - streamDisp * 12.0;
             vec3 newPos = dir * (uRadius + displacement);
 
             vec4 mvPosition = modelViewMatrix * vec4(newPos, 1.0);
@@ -332,9 +341,9 @@
             }
 
             // раздражение добавляет красный оттенок и повышает яркость
-            vec3 angryTint = vec3(1.0, 0.1, 0.12);
-            baseColor = mix(baseColor, angryTint, irrit * 0.7);
-            intensity *= (1.0 + irrit * 0.18);
+            vec3 angryTint = vec3(1.0, 0.12, 0.1);
+            baseColor = mix(baseColor, angryTint, clamp(irrit * 1.2, 0.0, 1.0));
+            intensity *= (1.0 + irrit * 0.4);
 
             // доп. эмиссия на гребнях
             float crestGlow = vCrest * 0.35;
@@ -372,7 +381,7 @@
     const radius = 80;
     const pointsGeom = new THREE.BufferGeometry();
 
-    const particles = 60000; // количество точек
+    const particles = 80000; // количество точек
     const positions = new Float32Array(particles * 3);
     const charIndices = new Float32Array(particles);
     const charSet = "ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ0123456789";
@@ -516,7 +525,7 @@
         uniforms.uImpactType.value = type;
         uniforms.uFlowToImpact.value = 0.4; // приток к месту удара (локализован в шейдере)
         cameraShake = Math.min(1.0, cameraShake + strength * 0.02);
-        irritation = Math.min(1.0, irritation + strength * 0.025);
+        irritation = Math.min(1.0, irritation + strength * 0.05);
 
         const energyCost = strength * energyFactor;
         energy = Math.max(0.0, energy - energyCost);
@@ -564,7 +573,7 @@
         uniforms.uFlowStrength.value += (flowTarget - uniforms.uFlowStrength.value) * 0.12;
         uniforms.uFlowSpeed.value = 0.55 + Math.sin(t * 0.25) * 0.08;
         uniforms.uEnergy.value = energy;
-        irritation = Math.max(0.0, irritation - delta * 0.18);
+        irritation = Math.max(0.0, irritation - delta * 0.1);
         uniforms.uIrritation.value = irritation;
         // затухание притока к удару
         uniforms.uFlowToImpact.value *= Math.exp(-delta * 1.8);
